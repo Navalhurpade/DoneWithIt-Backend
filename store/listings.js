@@ -86,8 +86,8 @@ const listings = [
     price: 950,
     userId: 2,
     location: {
-      latitude: 37.78825,
-      longitude: -122.4324,
+      latitude: 27.78825,
+      longitude: -182.4324,
     },
   },
   {
@@ -98,8 +98,8 @@ const listings = [
     price: 50,
     userId: 2,
     location: {
-      latitude: 37.78825,
-      longitude: -122.4324,
+      latitude: 21.12161,
+      longitude: 76.73233,
     },
   },
 ];

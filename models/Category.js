@@ -7,6 +7,6 @@ const categorySchema = mongoose.Schema({
   color: String,
 });
 
-const Category = new mongoose.model("Catagory", categorySchema);
+const Category = new mongoose.model("Category", categorySchema);
 
 module.exports = Category;

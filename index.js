@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const categories = require("./routes/categories");
 const listings = require("./routes/listings");
@@ -9,6 +10,7 @@ const my = require("./routes/my");
 const messages = require("./routes/messages");
 const expoPushTokens = require("./routes/expoPushTokens");
 const helmet = require("helmet");
+const mongoose = require("mongoose");
 const compression = require("compression");
 const config = require("config");
 const app = express();
@@ -29,6 +31,17 @@ app.use("/api/expoPushTokens", expoPushTokens);
 app.use("/api/messages", messages);
 
 const port = process.env.PORT || config.get("port");
-app.listen(port, function() {
-  console.log(`Server started on port ${port}...`);
-});
+var IP = require("os").networkInterfaces().wlp3s0[0].address;
+
+mongoose.connect(
+  process.env.DB_URL,
+  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true },
+  (error) => {
+    if (error) return console.log(error);
+
+    console.log("Connect MongoDB Cluster !");
+    app.listen(port, IP, function () {
+      console.log(`Server started at http://${IP}:${port}`);
+    });
+  }
+);

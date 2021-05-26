@@ -4,7 +4,7 @@ const listingSchema = mongoose.Schema({
   title: String,
   description: String,
   images: [{ imgBuffer: Buffer, contentType: String }],
-  categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Catagory" },
+  categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
   price: Number,
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   location: {
