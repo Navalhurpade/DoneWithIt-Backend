@@ -2,23 +2,34 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
-const usersStore = require("../store/users");
+const usersStore = require("../store/DB/UserManager");
 const validateWith = require("../middleware/validation");
+const bcrypt = require("bcrypt");
 
 const schema = {
   email: Joi.string().email().required(),
   password: Joi.string().required().min(5),
 };
 
-router.post("/", validateWith(schema), (req, res) => {
+router.post("/", validateWith(schema), async (req, res) => {
   const { email, password } = req.body;
-  const user = usersStore.getUserByEmail(email);
-  if (!user || user.password !== password)
-    return res.status(400).send({ error: "Invalid email or password." });
+  const userEmail = email.toLowerCase();
+
+  const foundUser = await usersStore.findUserByEmail(userEmail);
+
+  if (!foundUser) {
+    return res.status(404).send({ error: "Invalde email or password !" });
+  }
+   console.log("pass",password, foundUser.password);
+  const match = await bcrypt.compare(password, foundUser.password);
+
+  if (!match) {
+    return res.status(400).send({ error: "Invalde email or password !" });
+  }
 
   const token = jwt.sign(
-    { userId: user.id, name: user.name, email },
-    "jwtPrivateKey"
+    { userId: foundUser.id, name: foundUser.name, email: userEmail },
+    process.env.PRIVET_KEY
   );
   res.send(token);
 });

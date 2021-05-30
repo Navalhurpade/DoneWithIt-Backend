@@ -31,17 +31,24 @@ app.use("/api/expoPushTokens", expoPushTokens);
 app.use("/api/messages", messages);
 
 const port = process.env.PORT || config.get("port");
-var IP = require("os").networkInterfaces().wlp3s0[0].address;
+var IP = require("os").networkInterfaces().wlp3s0[0].address
+// var IP = require("os").networkInterfaces().lo[0].address
 
 mongoose.connect(
   process.env.DB_URL,
-  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true },
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    dbName: "DoneWithIt",
+  },
   (error) => {
     if (error) return console.log(error);
 
     console.log("Connect MongoDB Cluster !");
+    
     app.listen(port, IP, function () {
       console.log(`Server started at http://${IP}:${port}`);
     });
-  }
+}
 );

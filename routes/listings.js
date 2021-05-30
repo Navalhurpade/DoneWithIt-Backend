@@ -2,15 +2,13 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 const multer = require("multer");
+const fs = require("fs");
 
-const store = require("../store/listings");
-const categoriesStore = require("../store/categories");
+const listingManeger = require("../store/DB/listingsManeger");
+const categoriesStore = require("../store/DB/catergeryManeger");
 const validateWith = require("../middleware/validation");
 const auth = require("../middleware/auth");
 const imageResize = require("../middleware/imageResize");
-const delay = require("../middleware/delay");
-const listingMapper = require("../mappers/listings");
-const config = require("config");
 
 const upload = multer({
   dest: "uploads/",
@@ -21,24 +19,29 @@ const schema = {
   title: Joi.string().required(),
   description: Joi.string().allow(""),
   price: Joi.number().required().min(1),
-  categoryId: Joi.number().required().min(1),
+  categoryId: Joi.string().required(),
   location: Joi.object({
     latitude: Joi.number().required(),
     longitude: Joi.number().required(),
   }).optional(),
+  userId: Joi.string().required(),
 };
 
-const validateCategoryId = (req, res, next) => {
-  if (!categoriesStore.getCategory(parseInt(req.body.categoryId)))
-    return res.status(400).send({ error: "Invalid categoryId." });
+const validateCategoryId = async (req, res, next) => {
+  const id = req.body.categoryId;
 
-  next();
+  const allCategores = await categoriesStore.getCategories();
+  const found = allCategores.filter((c) => c._id == id);
+
+  if (found.length == 0) {
+    return res.status(404).send({ error: "Invalid categoryId provided !" });
+  } else next();
 };
 
-router.get("/", (req, res) => {
-  const listings = store.getListings();
-  const resources = listings.map(listingMapper);
-  res.send(resources);
+router.get("/", auth, async (req, res) => {
+  //can populate listings by passing path  "categoryId userId"
+  const listings = await listingManeger.getAllListings("userId");
+  res.send(listings);
 });
 
 router.post(
@@ -52,7 +55,8 @@ router.post(
     // stored in the uploads folder. We'll need to clean up this folder
     // using a separate process.
     // auth,
-    upload.array("images", config.get("maxImageCount")),
+    auth,
+    upload.array("images", 3),
     validateWith(schema),
     validateCategoryId,
     imageResize,
@@ -60,18 +64,36 @@ router.post(
 
   async (req, res) => {
     const listing = {
+      userId: req.body.userId,
       title: req.body.title,
       price: parseFloat(req.body.price),
-      categoryId: parseInt(req.body.categoryId),
+      categoryId: req.body.categoryId,
       description: req.body.description,
     };
-    listing.images = req.images.map((fileName) => ({ fileName: fileName }));
+
+    listing.images = req.images.map((fileName) => {
+      const thumb = fs.readFileSync(`public/assets/${fileName}_thumb.jpg`);
+      const full = fs.readFileSync(`public/assets/${fileName}_full.jpg`);
+      return {
+        fullImg: { imgBuffer: full, contentType: ".jpg" },
+        thumbImg: { imgBuffer: thumb, contentType: ".jpg" },
+      };
+    });
+
     if (req.body.location) listing.location = JSON.parse(req.body.location);
-    if (req.user) listing.userId = req.user.userId;
 
-    store.addListing(listing);
+    //Store Listing to DB and provides callback on upload sucsess !
+    listingManeger.storeListing(listing, () => {
+      //Clearing memmory on upload finish !!!
+      req.images.map((fileName) => {
+        fs.unlinkSync(`public/assets/${fileName}_full.jpg`);
+        fs.unlinkSync(`public/assets/${fileName}_thumb.jpg`);
 
-    res.status(201).send(listing);
+        fs.unlinkSync(`uploads/${fileName}`);
+      });
+    });
+
+    res.status(201).send({ ok: "Listing Stored to DB" });
   }
 );
 

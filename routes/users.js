@@ -1,9 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
-const usersStore = require("../store/users");
+const {
+  getUsers,
+  findUserByEmail,
+  storeUser,
+} = require("../store/DB/UserManager");
 const validateWith = require("../middleware/validation");
-const User = require("./../models/Users");
+const bcrypt = require("bcrypt");
+const slatingRounds = 10; // DO NOT CHANGE, WILL BRECK OLD STORED PASSWORD
 
 const schema = {
   name: Joi.string().required().min(2),
@@ -11,22 +16,42 @@ const schema = {
   password: Joi.string().required().min(5),
 };
 
-router.post("/", validateWith(schema), (req, res) => {
+function capitalizeFirstLetter(string) {
+  return string[0].toUpperCase() + string.slice(1);
+}
+
+router.post("/", validateWith(schema), async (req, res) => {
   const { name, email, password } = req.body;
-  if (usersStore.getUserByEmail(email))
-    return res
-      .status(400)
-      .send({ error: "A user with the given email already exists." });
 
-  const user = { name, email, password };
-  // usersStore.addUser(user);
-  User;
+  // making Case insensitive
+  const userEmail = email.toLowerCase().trim();
+  const userName = capitalizeFirstLetter(name).trim();
 
-  res.status(201).send(user);
+  const user = { name: userName, email: userEmail, password };
+  const foundUser = await findUserByEmail(userEmail);
+
+  if (foundUser) {
+    res.status(409).send({ error: "User exist" });
+    return;
+  }
+
+  const hashedPass = await bcrypt.hash(user.password, slatingRounds);
+
+  const newUser = {
+    email: userEmail,
+    name: userName,
+    password: hashedPass,
+  };
+
+  storeUser(newUser);
+
+  res.status(201).send({ ok: "Registerded new user " });
+  return;
 });
 
 router.get("/", (req, res) => {
-  res.send(usersStore.getUsers());
+  const allUsers = getUsers();
+  return res.send(allUsers);
 });
 
 module.exports = router;
