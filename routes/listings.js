@@ -9,6 +9,7 @@ const categoriesStore = require("../store/DB/catergeryManeger");
 const validateWith = require("../middleware/validation");
 const auth = require("../middleware/auth");
 const imageResize = require("../middleware/imageResize");
+const processListing = require("../utilities/processListing");
 
 const upload = multer({
   dest: "uploads/",
@@ -63,24 +64,7 @@ router.post(
   ],
 
   async (req, res) => {
-    const listing = {
-      userId: req.body.userId,
-      title: req.body.title,
-      price: parseFloat(req.body.price),
-      categoryId: req.body.categoryId,
-      description: req.body.description,
-    };
-
-    listing.images = req.images.map((fileName) => {
-      const thumb = fs.readFileSync(`public/assets/${fileName}_thumb.jpg`);
-      const full = fs.readFileSync(`public/assets/${fileName}_full.jpg`);
-      return {
-        fullImg: { imgBuffer: full, contentType: ".jpg" },
-        thumbImg: { imgBuffer: thumb, contentType: ".jpg" },
-      };
-    });
-
-    if (req.body.location) listing.location = JSON.parse(req.body.location);
+    const listing = processListing(req.body, req.images);
 
     //Store Listing to DB and provides callback on upload sucsess !
     listingManeger.storeListing(listing, () => {
