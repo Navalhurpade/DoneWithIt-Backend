@@ -14,6 +14,7 @@ const schema = {
   name: Joi.string().required().min(2),
   email: Joi.string().email().required(),
   password: Joi.string().required().min(5),
+  gender: Joi.number().required(),
 };
 
 function capitalizeFirstLetter(string) {
@@ -21,7 +22,7 @@ function capitalizeFirstLetter(string) {
 }
 
 router.post("/", validateWith(schema), async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, gender } = req.body;
 
   // making Case insensitive
   const userEmail = email.toLowerCase().trim();
@@ -41,6 +42,7 @@ router.post("/", validateWith(schema), async (req, res) => {
     email: userEmail,
     name: userName,
     password: hashedPass,
+    gender: gender,
   };
 
   storeUser(newUser);

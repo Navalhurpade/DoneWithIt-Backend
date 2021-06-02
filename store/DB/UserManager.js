@@ -10,7 +10,7 @@ const getUsers = async () => {
 };
 
 const getUserById = async (id) => {
-  const users = await getUsers()
+  const users = await getUsers();
   return users.filter((u) => u._id == id)[0];
 };
 
@@ -29,4 +29,24 @@ const storeUser = (user) => {
   }
 };
 
-module.exports = { getUserById, getUsers, findUserByEmail, storeUser };
+const updateUser = async (userId) => {
+  try {
+    const foundUser = await User.findById(userId);
+
+    console.log("found", foundUser);
+
+    const updateQuery = { listings: foundUser.listings + 1 };
+    await User.findByIdAndUpdate(userId, updateQuery);
+    console.info("user Updated ");
+  } catch (error) {
+    console.log("Error while updating user ", error);
+  }
+};
+
+module.exports = {
+  getUserById,
+  getUsers,
+  findUserByEmail,
+  storeUser,
+  updateUser,
+};

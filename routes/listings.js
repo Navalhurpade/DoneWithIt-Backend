@@ -10,6 +10,9 @@ const validateWith = require("../middleware/validation");
 const auth = require("../middleware/auth");
 const imageResize = require("../middleware/imageResize");
 const processListing = require("../utilities/processListing");
+const User = require("../models/Users");
+const { updateUser } = require("../store/DB/UserManager");
+const { join } = require("path");
 
 const upload = multer({
   dest: "uploads/",
@@ -26,6 +29,7 @@ const schema = {
     longitude: Joi.number().required(),
   }).optional(),
   userId: Joi.string().required(),
+  listings: Joi.string().optional(),
 };
 
 const validateCategoryId = async (req, res, next) => {
@@ -39,7 +43,7 @@ const validateCategoryId = async (req, res, next) => {
   } else next();
 };
 
-router.get("/", auth, async (req, res) => {
+router.get("/", async (req, res) => {
   //can populate listings by passing path  "categoryId userId"
   const listings = await listingManeger.getAllListings("userId");
   res.send(listings);
@@ -65,7 +69,6 @@ router.post(
 
   async (req, res) => {
     const listing = processListing(req.body, req.images);
-
     //Store Listing to DB and provides callback on upload sucsess !
     listingManeger.storeListing(listing, () => {
       //Clearing memmory on upload finish !!!
@@ -76,6 +79,8 @@ router.post(
         fs.unlinkSync(`uploads/${fileName}`);
       });
     });
+
+    updateUser(listing.userId);
 
     res.status(201).send({ ok: "Listing Stored to DB" });
   }

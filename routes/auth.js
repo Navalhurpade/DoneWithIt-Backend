@@ -20,7 +20,6 @@ router.post("/", validateWith(schema), async (req, res) => {
   if (!foundUser) {
     return res.status(404).send({ error: "Invalde email or password !" });
   }
-   console.log("pass",password, foundUser.password);
   const match = await bcrypt.compare(password, foundUser.password);
 
   if (!match) {
@@ -28,7 +27,13 @@ router.post("/", validateWith(schema), async (req, res) => {
   }
 
   const token = jwt.sign(
-    { userId: foundUser.id, name: foundUser.name, email: userEmail },
+    {
+      userId: foundUser._id,
+      name: foundUser.name,
+      email: userEmail,
+      listings: foundUser.listings,
+      gender: foundUser.gender,
+    },
     process.env.PRIVET_KEY
   );
   res.send(token);

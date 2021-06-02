@@ -16,6 +16,7 @@ const listingSchema = mongoose.Schema({
     latitude: Number,
     longitude: Number,
   },
+  date: { type: Date, default: Date.now() },
 });
 
 const Listing = new mongoose.model("Listing", listingSchema);
