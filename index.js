@@ -21,9 +21,9 @@ app.use(helmet());
 app.use(compression());
 
 app.use("/api/categories", categories);
-app.use("/api/listing", listing);
+// app.use("/api/listing", listing);
 app.use("/api/listings", listings);
-app.use("/api/user", user);
+// app.use("/api/user", user);
 app.use("/api/users", users);
 app.use("/api/auth", auth);
 app.use("/api/my", my);
@@ -40,6 +40,7 @@ mongoose.connect(
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
+    useFindAndModify: false,
     dbName: "DoneWithIt",
   },
   (error) => {

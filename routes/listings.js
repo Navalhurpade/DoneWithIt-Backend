@@ -10,13 +10,11 @@ const validateWith = require("../middleware/validation");
 const auth = require("../middleware/auth");
 const imageResize = require("../middleware/imageResize");
 const processListing = require("../utilities/processListing");
-const User = require("../models/Users");
 const { updateUser } = require("../store/DB/UserManager");
-const { join } = require("path");
 
 const upload = multer({
   dest: "uploads/",
-  limits: { fieldSize: 25 * 1024 * 1024 },
+  limits: { fieldSize: 25 * 720 * 720 },
 });
 
 const schema = {
