@@ -20,6 +20,9 @@ app.use(express.json());
 app.use(helmet());
 app.use(compression());
 
+app.get("/", (req, res) => {
+  res.send("Congrats backend Working !");
+});
 app.use("/api/categories", categories);
 // app.use("/api/listing", listing);
 app.use("/api/listings", listings);
@@ -31,7 +34,7 @@ app.use("/api/expoPushTokens", expoPushTokens);
 app.use("/api/messages", messages);
 
 const port = process.env.PORT || config.get("port");
-var IP = require("os").networkInterfaces().wlp3s0[0].address;
+// var IP = require("os").networkInterfaces().wlp3s0[0].address;
 // var IP = require("os").networkInterfaces().lo[0].address;
 
 mongoose.connect(
@@ -48,8 +51,8 @@ mongoose.connect(
 
     console.log("Connect MongoDB Cluster !");
 
-    app.listen(port, IP, function () {
-      console.log(`Server started at http://${IP}:${port}`);
+    app.listen(port, function () {
+      console.log(`Server has started `);
     });
   }
 );
