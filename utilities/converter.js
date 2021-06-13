@@ -1,5 +1,7 @@
 //Funtion takes a Array Buffer and converts it to readable img src !
-export function getReadableImgSrc(buffer, contentType) {
+const btoa = require("btoa");
+
+function getReadableImgSrc(buffer, contentType) {
   var binary = "";
   var bytes = new Uint8Array(buffer);
   var len = bytes.byteLength;
@@ -8,5 +10,7 @@ export function getReadableImgSrc(buffer, contentType) {
   }
 
   //returing src for displaying IMG
-  return `data:image/${contentType};base64,${window.btoa(binary)}`;
+  return `data:image/${contentType};base64,${btoa(binary)}`;
 }
+
+module.exports = { getReadableImgSrc };

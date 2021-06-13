@@ -44,6 +44,7 @@ const validateCategoryId = async (req, res, next) => {
 router.get("/", async (req, res) => {
   //can populate listings by passing path  "categoryId userId"
   const listings = await listingManeger.getAllListings("userId");
+
   res.send(listings);
 });
 

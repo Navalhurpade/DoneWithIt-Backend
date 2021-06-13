@@ -5,7 +5,10 @@ const categories = [
     icon: "floor-lamp",
     backgroundColor: "#fc5c65",
     color: "white",
+    v : "2.6.1"
   },
+  
+  
   {
     id: 2,
     name: "Cars",
@@ -13,6 +16,8 @@ const categories = [
     backgroundColor: "#fd9644",
     color: "white",
   },
+  
+  
   {
     id: 3,
     name: "Cameras",
@@ -20,6 +25,9 @@ const categories = [
     backgroundColor: "#fed330",
     color: "white",
   },
+  
+  
+  
   {
     id: 4,
     name: "Games",
