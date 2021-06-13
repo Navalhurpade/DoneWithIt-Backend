@@ -50,9 +50,14 @@ mongoose.connect(
     if (error) return console.log(error);
 
     console.log("Connect MongoDB Cluster !");
-
-    app.listen(port, IP, function () {
-      console.log(`Server has started http://${IP}:${port}/`);
-    });
+    if (IP) {
+      app.listen(port, IP, function () {
+        console.log(`Server has started locally http://${IP}:${port}/`);
+      });
+    } else {
+      app.listen(port, function () {
+        console.log(`Server has started `);
+      });
+    }
   }
 );
