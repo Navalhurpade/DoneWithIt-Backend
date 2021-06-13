@@ -34,7 +34,7 @@ app.use("/api/expoPushTokens", expoPushTokens);
 app.use("/api/messages", messages);
 
 const port = process.env.PORT || config.get("port");
-var IP = require("os").networkInterfaces().wlp3s0[0].address;
+// var IP = require("os").networkInterfaces().wlp3s0[0].address;
 // var IP = require("os").networkInterfaces().lo[0].address;
 
 mongoose.connect(
@@ -50,11 +50,7 @@ mongoose.connect(
     if (error) return console.log(error);
 
     console.log("Connect MongoDB Cluster !");
-    // if (IP) {
-    //   app.listen(port, IP, function () {
-    //     console.log(`Server has started locally http://${IP}:${port}/`);
-    //   });
-    // } else {
+
     app.listen(port, function () {
       console.log(`Server has started `);
     });
