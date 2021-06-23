@@ -33,7 +33,8 @@ const schema = {
 const validateCategoryId = async (req, res, next) => {
   const id = req.body.categoryId;
 
-  const allCategores = await categoriesStore.getCategories();
+  const allCategores = categoriesStore.getCategories();
+  console.log(id);
   const found = allCategores.filter((c) => c._id == id);
 
   if (found.length == 0) {

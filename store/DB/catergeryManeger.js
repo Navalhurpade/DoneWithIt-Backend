@@ -1,12 +1,15 @@
 const Categery = require("../../models/Category");
+const c = require("./../categories");
 
-const getCategories = async () => {
-  try {
-    return await Categery.find({});
-  } catch (error) {
-    console.log("error while fetching categiries ", error);
-  }
-};
+const getCategories = c.getCategories;
+
+// const getCategories = async () => {
+//   try {
+//     return await Categery.find({});
+//   } catch (error) {
+//     console.log("error while fetching categiries ", error);
+//   }
+// };
 
 const storeCategery = async (categery) => {
   try {

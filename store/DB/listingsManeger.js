@@ -9,15 +9,15 @@ const getAllListings = async (populate) => {
 };
 
 const getMyListings = async (id) => {
-  const listing = await getAllListings()
-  const foundListing = listing.filter((l) => l._id === id);
+  const listings = await getAllListings();
+  const foundListing = listings.filter((l) => l.userId == id);
   return foundListing.length !== 0 ? foundListing : null;
 };
 
 const storeListing = (listing, onStoreSucess) => {
   try {
     const newListing = new Listing(listing);
-     newListing.save(() => {
+    newListing.save(() => {
       console.log("Stored new Listing");
       onStoreSucess();
     });
