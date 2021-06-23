@@ -15,7 +15,7 @@ const listingSchema = mongoose.Schema({
       fullImg: String,
     },
   ],
-  categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
+  categoryId: Number,
   price: Number,
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   location: {
